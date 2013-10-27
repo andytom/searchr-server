@@ -8,7 +8,7 @@
 from whoosh.writing import BufferedWriter
 from hotqueue import HotQueue
 
-from app.model.document import get_index, Document
+from app.model.document import Document
 from app.config import main as main_config
 
 
@@ -25,7 +25,7 @@ def main():
     queue = HotQueue(main_config.INDEX_QUEUE, 
                      host=main_config.REDIS_HOST, 
                      port=main_config.REDIS_PORT)
-    index = get_index(main_config.WHOOSH_INDEX_DIR)
+    index = Document.get_index(main_config.WHOOSH_INDEX_DIR)
     writer = BufferedWriter(index, limit=10)
     try:
         for doc_id in queue.consume():

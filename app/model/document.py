@@ -26,6 +26,13 @@ class Document(db.Model):
     deleted = db.Column(db.Boolean())
     tags = db.relationship('Tag', secondary=tags_to_documents,
                            backref=db.backref('documents', lazy='dynamic'))
+    schema = Schema(id=NUMERIC(stored=True, unique=True),
+                    title=TEXT(stored=True),
+                    text=TEXT(stored=True,
+                              analyzer=analysis.NgramWordAnalyzer(3, 10)),
+                    created=DATETIME(sortable=True),
+                    updated=DATETIME(sortable=True),
+                    tags=KEYWORD(scorable=True))
 
     def __init__(self, title, text, tags=[]):
         now = datetime.utcnow()
@@ -68,23 +75,11 @@ class Document(db.Model):
             prepared_doc["tags"] = [unicode(i.id) for i in self.tags]
         return prepared_doc
 
-
-#-----------------------------------------------------------------------------#
-# Search Schema
-#-----------------------------------------------------------------------------#
-analyzer = analysis.NgramWordAnalyzer(3, 10)
-doc_schema = Schema(id=NUMERIC(stored=True, unique=True),
-                    title=TEXT(stored=True),
-                    text=TEXT(stored=True, analyzer=analyzer),
-                    created=DATETIME(sortable=True),
-                    updated=DATETIME(sortable=True),
-                    tags=KEYWORD(scorable=True))
-
-
-def get_index(index_dir, schema=doc_schema):
-    lib.ensure_dir(index_dir)
-    if index.exists_in(index_dir):
-        ix = index.open_dir(index_dir)
-    else:
-        ix = index.create_in(index_dir, schema)
-    return ix
+    @classmethod
+    def get_index(cls, index_dir):
+        lib.ensure_dir(index_dir)
+        if index.exists_in(index_dir):
+            ix = index.open_dir(index_dir)
+        else:
+            ix = index.create_in(index_dir, cls.schema)
+        return ix

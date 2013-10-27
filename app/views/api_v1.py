@@ -7,7 +7,7 @@ from flask.ext.restful import Resource, reqparse, fields, marshal, marshal_with,
     types
 
 from app import db
-from app.model.document import Document, get_index
+from app.model.document import Document
 from app.model.tag import Tag
 from app.lib import tag_list, string_length
 
@@ -305,7 +305,7 @@ class IndexAPI(Resource):
     """
     @marshal_with(IX_FIELDS)
     def get(self):
-        ix = get_index(current_app.config['WHOOSH_INDEX_DIR'])
+        ix = Document.get_index(current_app.config['WHOOSH_INDEX_DIR'])
         return {'doc_count': ix.doc_count(), 
                 'last_modified': datetime.fromtimestamp(ix.last_modified()),
                 'is_empty': ix.is_empty()
@@ -324,7 +324,7 @@ class IndexAPI(Resource):
 class SearchAPI(Resource):
     def get(self):
         args = query_parse.parse_args()
-        ix = index.open_dir(current_app.config['WHOOSH_INDEX_DIR'])
+        ix = Document.get_index(current_app.config['WHOOSH_INDEX_DIR'])
         # TODO - Should check that the query is valid and parses at the moment
         # we just care if it is a unicode string or not.
         query = _parse_query(args['query'], ix.schema, u'text')
