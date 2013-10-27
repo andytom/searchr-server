@@ -30,19 +30,12 @@ def create_db():
 @nav.route("Run Tests", "Run all the Unit Tests")
 def run_unit_tests():
     navigator.ui.text_info("Running Unit Tests")
-    loader = unittest.TestLoader()
-    results = unittest.TestResult()
     test_list = ['app.tests.lib',
                  'app.tests.api_v1']
-    tests = loader.loadTestsFromNames(test_list)
-    tests.run(results)
-    navigator.ui.text_info("Ran {} test(s)".format(results.testsRun))
+    tests = unittest.TestLoader().loadTestsFromNames(test_list)
+    results = unittest.TextTestRunner().run(tests)
     if results.wasSuccessful():
         navigator.ui.text_success("All tests passed")
-    else:
-        navigator.ui.text_error("The following test(s) failed")
-        for test, traceback in chain(results.errors, results.failures):
-           navigator.ui.text_error("Test {}\n{}".format(test, traceback))
 
 
 #-----------------------------------------------------------------------------#
