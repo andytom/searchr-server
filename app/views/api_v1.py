@@ -359,16 +359,17 @@ class SearchAPI(Resource):
 
 #-----------------------------------------------------------------------------#
 class DocumentMoreLikeThisAPI(Resource):
-    def get(self, id):
+    def get(self, doc_id):
         ix = Document.get_index(current_app.config['WHOOSH_INDEX_DIR'])
         with ix.searcher() as searcher:
-            docnum = searcher.document_number(id=id)
-            if not docnum:
+            docnum = searcher.document_number(id=doc_id)
+            if docnum is None:
                 abort(404)
             results = searcher.more_like(docnum, 'text')
+            processed_results = _process_results(results)
             result_dict = {'meta':{
-                               'total': results.estimated_length() 
+                               'total': len(processed_results)
                                },
-                           'hits': _process_results(results)
+                           'hits': processed_results
                            }
             return result_dict
