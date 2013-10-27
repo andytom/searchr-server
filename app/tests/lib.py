@@ -88,3 +88,4 @@ class LibTestCase(BaseTestCase):
         self.assertFalse(os.path.exists(test_dir))
         lib.ensure_dir(test_dir)
         self.assertTrue(os.path.exists(test_dir))
+        os.rmdir(test_dir)
