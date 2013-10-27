@@ -1,5 +1,6 @@
-import unittest
 import json
+import os
+import unittest
 
 from app import app, db
 from app.model.document import Document
@@ -81,3 +82,9 @@ class LibTestCase(BaseTestCase):
         self.assertEqual(len(res), 1)
         self.assertEqual((res[0].id), 1)
         self.assertEqual(type(res[0]), Tag)
+
+    def test_ensure_dir(self):
+        test_dir = "/tmp/searchr/test"
+        self.assertFalse(os.path.exists(test_dir))
+        lib.ensure_dir(test_dir)
+        self.assertTrue(os.path.exists(test_dir))
