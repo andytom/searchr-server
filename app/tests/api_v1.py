@@ -2,7 +2,7 @@ import unittest
 import json
 
 from app import app, db
-from app.model.document import Document, get_index
+from app.model.document import Document
 from app.model.tag import Tag
 
 
@@ -22,7 +22,7 @@ class BaseTestCase(unittest.TestCase):
         db.drop_all()
 
     def _index_doc(self, doc):
-        ix = get_index(self.index_dir)
+        ix = Document.get_index(self.index_dir)
         writer = ix.writer()
         writer.update_document(**doc.prepare())
         writer.commit()
