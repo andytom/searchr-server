@@ -1,4 +1,4 @@
-from flask import current_app
+from flask import current_app, abort
 from datetime import datetime
 from whoosh import index, qparser, highlight
 from whoosh.qparser.dateparse import DateParserPlugin
@@ -363,6 +363,8 @@ class DocumentMoreLikeThisAPI(Resource):
         ix = Document.get_index(current_app.config['WHOOSH_INDEX_DIR'])
         with ix.searcher() as searcher:
             docnum = searcher.document_number(id=id)
+            if not docnum:
+                abort(404)
             results = searcher.more_like(docnum, 'text')
             result_dict = {'meta':{
                                'total': results.estimated_length() 

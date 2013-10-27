@@ -304,7 +304,11 @@ class DocumentSearchAPITestCase(BaseTestCase):
 
 #-----------------------------------------------------------------------------#
 class DocumentMoreLikeThisAPITestCase(BaseTestCase):
-    def test_more_like_this(self):
+    def test_more_like_this_no_docs(self):
+        rv = self.app.get(u'/api/v1.0/document/1/mlt/')
+        self.assertEqual(rv.status_code, 404)
+
+    def test_more_like_this_other_docs(self):
         doc_1 = self._add_default_doc()
         doc_2 = self._add_default_doc()
         self._index_docs(doc_1, doc_2)
