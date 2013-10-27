@@ -1,5 +1,6 @@
 import unittest
 import json
+import shutil
 
 from app import app, db
 from app.model.document import Document
@@ -20,12 +21,17 @@ class BaseTestCase(unittest.TestCase):
     def tearDown(self):
         db.session.remove()
         db.drop_all()
+        shutil.rmtree(self.index_dir, ignore_errors=True)
 
     def _index_doc(self, doc):
         ix = Document.get_index(self.index_dir)
         writer = ix.writer()
         writer.update_document(**doc.prepare())
         writer.commit()
+
+    def _index_docs(self, *doc_ids):
+        for i in doc_ids:
+            self._index_doc(i)
 
     def _add_default_doc(self):
         doc = Document(u"Test Title", u"Test Text")
@@ -294,3 +300,16 @@ class DocumentSearchAPITestCase(BaseTestCase):
         self.assertEqual(rv_json[u'meta'][u'total'], 1)
         self.assertEqual(rv_json[u'hits'][0][u'id'], 1)
         self.assertEqual(rv_json[u'query'], u'text:test')
+
+
+#-----------------------------------------------------------------------------#
+class DocumentMoreLikeThisAPITestCase(BaseTestCase):
+    def test_more_like_this(self):
+        doc_1 = self._add_default_doc()
+        doc_2 = self._add_default_doc()
+        self._index_docs(doc_1, doc_2)
+        rv = self.app.get(u'/api/v1.0/document/1/mlt/')
+        rv_json = json.loads(rv.data)
+        self.assertEqual(len(rv_json[u'hits']), 1)
+        self.assertEqual(rv_json[u'hits'][0][u'id'], 2)
+        self.assertEqual(rv_json[u'meta'][u'total'], 1)

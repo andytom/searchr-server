@@ -26,7 +26,7 @@ api = Api(app)
 # Register API Routes
 #-----------------------------------------------------------------------------#
 from views.api_v1 import DocumentAPI, DocumentListAPI, PingAPI, TagAPI,\
-    TagListAPI, DocumentTagAPI, IndexAPI, SearchAPI
+    TagListAPI, DocumentTagAPI, IndexAPI, SearchAPI, DocumentMoreLikeThisAPI
 
 api.add_resource(PingAPI, '/api/v1.0/ping', '/api/v1.0/ping/')
 api.add_resource(DocumentAPI, '/api/v1.0/document/<int:id>', endpoint='document')
@@ -34,5 +34,6 @@ api.add_resource(DocumentListAPI, '/api/v1.0/document', '/api/v1.0/document/')
 api.add_resource(TagAPI, '/api/v1.0/tag/<int:id>', endpoint='tag')
 api.add_resource(TagListAPI, '/api/v1.0/tag', '/api/v1.0/tag/')
 api.add_resource(DocumentTagAPI, '/api/v1.0/document/<int:doc_id>/tag/<int:tag_id>')
+api.add_resource(DocumentMoreLikeThisAPI, '/api/v1.0/document/<int:id>/mlt/')
 api.add_resource(IndexAPI, '/api/v1.0/index')
 api.add_resource(SearchAPI, '/api/v1.0/document/search')

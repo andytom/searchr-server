@@ -355,3 +355,18 @@ class SearchAPI(Resource):
             except:
                 result_dict['query'] = u':('
             return result_dict
+
+
+#-----------------------------------------------------------------------------#
+class DocumentMoreLikeThisAPI(Resource):
+    def get(self, id):
+        ix = Document.get_index(current_app.config['WHOOSH_INDEX_DIR'])
+        with ix.searcher() as searcher:
+            docnum = searcher.document_number(id=id)
+            results = searcher.more_like(docnum, 'text')
+            result_dict = {'meta':{
+                               'total': results.estimated_length() 
+                               },
+                           'hits': _process_results(results)
+                           }
+            return result_dict
