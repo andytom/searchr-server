@@ -11,6 +11,7 @@ class BaseTestCase(unittest.TestCase):
     def setUp(self):
         app.config['TESTING'] = True
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://' 
+        app.config['INDEX_QUEUE'] = 'test_index'
         self.app = app.test_client()
         db.create_all()
 

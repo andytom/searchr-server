@@ -12,6 +12,7 @@ class BaseTestCase(unittest.TestCase):
     def setUp(self):
         app.config['TESTING'] = True
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://' 
+        app.config['INDEX_QUEUE'] = 'test_index'
         self.app = app.test_client()
         db.create_all()
 
@@ -53,6 +54,11 @@ class LibTestCase(BaseTestCase):
     def test_tag_list_validator_with_invalid(self):
         with self.assertRaises(ValueError, msg="1 is not a valid Tag id"):
             res = lib.tag_list([1], u'Tag List')
+
+    def test_tag_list_validator_with_mix(self):
+        self._add_default_tag()
+        with self.assertRaises(ValueError, msg="1 is not a valid Tag id"):
+            res = lib.tag_list([1,2], u'Tag List')
 
     def test_tag_list_validator_no_duplicates(self):
         self._add_default_tag()
