@@ -33,11 +33,16 @@ def string_length(minimum=0, maximum=None):
 
 
 def tag_list(value, name):
-    tags = []
-    for i in set(value):
-        tag = Tag.query.get(i)
-        if tag:
-            tags.append(tag)
-        else:
-            raise ValueError("{} is not a valid Tag id".format(i))
-    return tags
+    value = set(value)
+    tags = Tag.query.filter(Tag.id.in_(value)).all()
+
+    if tags is not None and (len(tags) == len(value)):
+        return tags
+
+    tag_ids = set(tag.id for tag in tags)
+    invalid_ids = value.difference(tag_ids)
+
+    if len(invalid_ids):
+        i = invalid_ids.pop()
+        raise ValueError("{} is not a valid Tag id".format(i))
+    return []
