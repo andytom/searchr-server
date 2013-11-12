@@ -34,6 +34,8 @@ def string_length(minimum=0, maximum=None):
 
 def tag_list(value, name):
     value = set(value)
+    if len(value) == 0:
+        return []
     tags = Tag.query.filter(Tag.id.in_(value)).all()
 
     if tags is not None and (len(tags) == len(value)):
@@ -43,6 +45,5 @@ def tag_list(value, name):
     invalid_ids = value.difference(tag_ids)
 
     if len(invalid_ids):
-        i = invalid_ids.pop()
-        raise ValueError("{} is not a valid Tag id".format(i))
+        raise ValueError("{} is not a valid Tag id".format(invalid_ids.pop()))
     return []

@@ -76,6 +76,10 @@ class LibTestCase(BaseTestCase):
             res = lib.tag_list([1,2], u'Tag List')
         self.assertEqual(cm.exception.message, "2 is not a valid Tag id")
 
+    def test_tag_list_validator_empty_list(self):
+        res = lib.tag_list([], u'Tag List')
+        self.assertEqual(len(res), 0)
+
     def test_tag_list_validator_no_duplicates(self):
         self._add_default_tag()
         res = lib.tag_list([1,1,1], u'Tag List')
